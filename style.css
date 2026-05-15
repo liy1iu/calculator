@@ -1,5 +1,5 @@
 body {
-  background-color: #3a86ff;
+  background: linear-gradient(#78cfff, #3a86ff);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,6 +8,80 @@ body {
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Courier New';
+  overflow: hidden;
+  position: relative;
+}
+
+.clouds {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  left: -360px;
+  width: 220px;
+  height: 66px;
+  background: white;
+  border-radius: 999px;
+  opacity: 0.92;
+  filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.1));
+  animation: flutuar 34s linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+
+.cloud::before {
+  width: 92px;
+  height: 92px;
+  left: 36px;
+  bottom: 26px;
+}
+
+.cloud::after {
+  width: 120px;
+  height: 120px;
+  right: 30px;
+  bottom: 18px;
+}
+
+.cloud-1 {
+  top: 11%;
+}
+
+.cloud-2 {
+  top: 35%;
+  transform: scale(0.72);
+  animation-duration: 46s;
+  animation-delay: -18s;
+  opacity: 0.75;
+}
+
+.cloud-3 {
+  top: 72%;
+  transform: scale(0.9);
+  animation-duration: 40s;
+  animation-delay: -30s;
+  opacity: 0.82;
+}
+
+@keyframes flutuar {
+  from {
+    translate: -10vw 0;
+  }
+
+  to {
+    translate: calc(100vw + 560px) 0;
+  }
 }
 
 .calc {
@@ -17,6 +91,8 @@ body {
   border: 3px solid black;
   width: min(760px, 100%);
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 h1 {
@@ -129,6 +205,30 @@ p {
 }
 
 @media (max-width: 650px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .cloud {
+    width: 170px;
+    height: 52px;
+    left: -260px;
+  }
+
+  .cloud::before {
+    width: 70px;
+    height: 70px;
+    left: 28px;
+    bottom: 20px;
+  }
+
+  .cloud::after {
+    width: 92px;
+    height: 92px;
+    right: 24px;
+    bottom: 14px;
+  }
+
   .results,
   .buttons {
     grid-template-columns: 1fr;
