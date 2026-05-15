@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Estatísticas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="calc">
+  <h1>calculadora sublime e estatistica</h1>
+  <p class="intro">Digite numeros e palavras misturados. Pode separar por espaco, virgula, ponto e virgula ou quebra de linha.</p>
+  <textarea id="display" placeholder="Exemplo: 10, banana, 8, ana, 10, texto, 3.5, banana"></textarea>
+
+  <div class="buttons">
+    <button class="eq" onclick="calcular()">Calcular</button>
+    <button class="op" onclick="preencherExemplo()">Exemplo</button>
+    <button class="cl" onclick="limpar()">Limpar</button>
+  </div>
+
+  <div class="results">
+    <section class="box">
+      <h2>Numeros</h2>
+      <div id="numerosResultado">
+        <div class="item">Aguardando dados...</div>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>Strings</h2>
+      <div id="stringsResultado">
+        <div class="item">Aguardando dados...</div>
+      </div>
+    </section>
+  </div>
+
+  <p>MADE by me</p>
+</div>
+
+<script>
+  function formatarNumero(numero) {
+    return Number.isInteger(numero) ? String(numero) : numero.toFixed(2).replace(/\.?0+$/, '');
+  }
+
+  function tokenizar(texto) {
+    return texto.match(/[-+]?\d+(?:[.,]\d+)?|[^\s,;]+/g) || [];
+  }
+
+  function contarFrequencia(lista) {
+    var mapa = {};
+
+    lista.forEach(function(item) {
+      mapa[item] = (mapa[item] || 0) + 1;
+    });
+
+    return mapa;
+  }
+
+  function escaparHtml(valor) {
+    return String(valor)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function calcularMedia(numeros) {
+    return numeros.reduce(function(total, numero) {
+      return total + numero;
+    }, 0) / numeros.length;
+  }
+
+  function calcularMediana(numeros) {
+    var ordenados = numeros.slice().sort(function(a, b) {
+      return a - b;
+    });
+    var meio = Math.floor(ordenados.length / 2);
+
+    if (ordenados.length % 2 === 0) {
+      return (ordenados[meio - 1] + ordenados[meio]) / 2;
+    }
+
+    return ordenados[meio];
+  }
+
+  function calcularModa(lista) {
+    var frequencia = contarFrequencia(lista);
+    var maior = 0;
+    var modas = [];
+
+    Object.keys(frequencia).forEach(function(item) {
+      if (frequencia[item] > maior) {
+        maior = frequencia[item];
+        modas = [item];
+      } else if (frequencia[item] === maior) {
+        modas.push(item);
+      }
+    });
+
+    return maior <= 1 ? 'Sem moda' : modas.join(', ');
+  }
+
+  function montarItem(rotulo, valor) {
+    return '<div class="item"><span class="label">' + escaparHtml(rotulo) + ':</span> ' + escaparHtml(valor) + '</div>';
+  }
+
+  function calcularNumeros(numeros) {
+    var alvo = document.getElementById('numerosResultado');
+
+    if (numeros.length === 0) {
+      alvo.innerHTML = montarItem('Aviso', 'Nenhum numero encontrado na entrada.');
+      return;
+    }
+
+    var soma = numeros.reduce(function(total, numero) {
+      return total + numero;
+    }, 0);
+    var numerosComoTexto = numeros.map(formatarNumero);
+
+    alvo.innerHTML =
+      montarItem('Numeros filtrados', numerosComoTexto.join(', ')) +
+      montarItem('Media', formatarNumero(calcularMedia(numeros))) +
+      montarItem('Mediana', formatarNumero(calcularMediana(numeros))) +
+      montarItem('Moda', calcularModa(numerosComoTexto)) +
+      montarItem('Valor minimo', formatarNumero(Math.min.apply(null, numeros))) +
+      montarItem('Valor maximo', formatarNumero(Math.max.apply(null, numeros))) +
+      montarItem('Soma total', formatarNumero(soma));
+  }
+
+  function calcularStrings(strings) {
+    var alvo = document.getElementById('stringsResultado');
+
+    if (strings.length === 0) {
+      alvo.innerHTML = montarItem('Aviso', 'Nenhuma string encontrada na entrada.');
+      return;
+    }
+
+    var frequencia = contarFrequencia(strings);
+    var unicas = strings.filter(function(texto) {
+      return frequencia[texto] === 1;
+    });
+    var maiorTamanho = Math.max.apply(null, strings.map(function(texto) {
+      return texto.length;
+    }));
+    var menorTamanho = Math.min.apply(null, strings.map(function(texto) {
+      return texto.length;
+    }));
+    var maisLongas = strings.filter(function(texto, indice, lista) {
+      return texto.length === maiorTamanho && lista.indexOf(texto) === indice;
+    });
+    var maisCurtas = strings.filter(function(texto, indice, lista) {
+      return texto.length === menorTamanho && lista.indexOf(texto) === indice;
+    });
+    var frequenciaTexto = Object.keys(frequencia).map(function(texto) {
+      return texto + ' (' + frequencia[texto] + 'x)';
+    }).join(', ');
+
+    alvo.innerHTML =
+      montarItem('Strings filtradas', strings.join(', ')) +
+      montarItem('Quantidade total', strings.length) +
+      montarItem('Strings unicas', unicas.length ? unicas.join(', ') : 'Nenhuma') +
+      montarItem('String mais longa', maisLongas.join(', ')) +
+      montarItem('String mais curta', maisCurtas.join(', ')) +
+      montarItem('Frequencia', frequenciaTexto);
+  }
+
+  function calcular() {
+    var entrada = document.getElementById('display').value.trim();
+    var tokens = tokenizar(entrada);
+    var numeros = [];
+    var strings = [];
+
+    tokens.forEach(function(token) {
+      var tokenNumero = token.replace(',', '.');
+
+      if (/^[-+]?\d+(?:[.,]\d+)?$/.test(token)) {
+        numeros.push(Number(tokenNumero));
+      } else {
+        strings.push(token);
+      }
+    });
+
+    calcularNumeros(numeros);
+    calcularStrings(strings);
+  }
+
+  function limpar() {
+    document.getElementById('display').value = '';
+    document.getElementById('numerosResultado').innerHTML = '<div class="item">Aguardando dados...</div>';
+    document.getElementById('stringsResultado').innerHTML = '<div class="item">Aguardando dados...</div>';
+  }
+
+  function preencherExemplo() {
+    document.getElementById('display').value = '10, banana, 8, ana, 10, texto, 3.5, banana, 8, sol';
+    calcular();
+  }
+</script>
+
+</body>
+</html>
