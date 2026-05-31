@@ -14,20 +14,21 @@
   <div class="cloud cloud-3"></div>
 </div>
 
-<div class="calc">
-  <h1>calculadora sublime e estatistica</h1>
-  <p class="intro">Digite numeros e palavras misturados. Pode separar por espaco, virgula, ponto e virgula ou quebra de linha.</p>
+<main class="calc">
+  <h1>Calculadora sublime e estatística</h1>
+  <p class="intro">Digite números e palavras misturados. Pode separar por espaço, vírgula, ponto e vírgula ou quebra de linha.</p>
+  <label class="sr-only" for="display">Entrada de números e palavras</label>
   <textarea id="display" placeholder="Exemplo: 10, banana, 8, ana, 10, texto, 3.5, banana"></textarea>
 
   <div class="buttons">
-    <button class="eq" onclick="calcular()">Calcular</button>
-    <button class="op" onclick="preencherExemplo()">Exemplo</button>
-    <button class="cl" onclick="limpar()">Limpar</button>
+    <button class="eq" type="button" onclick="calcular()">Calcular</button>
+    <button class="op" type="button" onclick="preencherExemplo()">Exemplo</button>
+    <button class="cl" type="button" onclick="limpar()">Limpar</button>
   </div>
 
   <div class="results">
     <section class="box">
-      <h2>Numeros</h2>
+      <h2>Números</h2>
       <div id="numerosResultado">
         <div class="item">Aguardando dados...</div>
       </div>
@@ -42,7 +43,7 @@
   </div>
 
   <p>MADE by me</p>
-</div>
+</main>
 
 <script>
   function formatarNumero(numero) {
@@ -116,7 +117,7 @@
     var alvo = document.getElementById('numerosResultado');
 
     if (numeros.length === 0) {
-      alvo.innerHTML = montarItem('Aviso', 'Nenhum numero encontrado na entrada.');
+      alvo.innerHTML = montarItem('Aviso', 'Nenhum número encontrado na entrada.');
       return;
     }
 
@@ -126,12 +127,12 @@
     var numerosComoTexto = numeros.map(formatarNumero);
 
     alvo.innerHTML =
-      montarItem('Numeros filtrados', numerosComoTexto.join(', ')) +
-      montarItem('Media', formatarNumero(calcularMedia(numeros))) +
+      montarItem('Números filtrados', numerosComoTexto.join(', ')) +
+      montarItem('Média', formatarNumero(calcularMedia(numeros))) +
       montarItem('Mediana', formatarNumero(calcularMediana(numeros))) +
       montarItem('Moda', calcularModa(numerosComoTexto)) +
-      montarItem('Valor minimo', formatarNumero(Math.min.apply(null, numeros))) +
-      montarItem('Valor maximo', formatarNumero(Math.max.apply(null, numeros))) +
+      montarItem('Valor mínimo', formatarNumero(Math.min.apply(null, numeros))) +
+      montarItem('Valor máximo', formatarNumero(Math.max.apply(null, numeros))) +
       montarItem('Soma total', formatarNumero(soma));
   }
 
@@ -166,10 +167,10 @@
     alvo.innerHTML =
       montarItem('Strings filtradas', strings.join(', ')) +
       montarItem('Quantidade total', strings.length) +
-      montarItem('Strings unicas', unicas.length ? unicas.join(', ') : 'Nenhuma') +
+      montarItem('Strings únicas', unicas.length ? unicas.join(', ') : 'Nenhuma') +
       montarItem('String mais longa', maisLongas.join(', ')) +
       montarItem('String mais curta', maisCurtas.join(', ')) +
-      montarItem('Frequencia', frequenciaTexto);
+      montarItem('Frequência', frequenciaTexto);
   }
 
   function calcular() {
